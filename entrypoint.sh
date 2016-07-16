@@ -18,7 +18,7 @@ NC='\033[0m' # No Color
 
 if [ -n "${SERVERIPS}" ]
 then
-	SERVERIPS="$(echo "${SERVERIPS}"|sed -e "s/\,/\,IP:/g")"
+	SERVERIPS="IP:$(echo "${SERVERIPS}"|sed -e "s/\,/\,IP:/g")"
 	[ $(echo ${SERVERIPS}|grep -c "IP:127.0.0.1") -eq 0 ] && SERVERIPS="${SERVERIPS},IP:127.0.0.1"
 else
 	SERVERIPS="IP:127.0.0.1"
