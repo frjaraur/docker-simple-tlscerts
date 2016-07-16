@@ -1,9 +1,10 @@
 # docker-simple-tlscerts
 
 Use following environment variables for passing data to key generation scripts:
- + CASERVERNAME -> Name of the CA server, defaults to docker-tls
+ + SERVERNAME -> Name of the CA server, defaults to localhost.
  + SERVERIPS -> IPs to add to server certificate (defaults to 127.0.0.1 to allow at least local connections)
- + CLIENTNAME -> Server name for the client certificate, defaults to docker-tls
+ + CLIENTNAME -> Server name for the client certificate, defaults to localhost.
+ + PASSPRHASE -> Avoid asking passphrase during certifcates generation.
 
  Actions available:
  - generate_CA -- Generate a Certificate Authority (Public and Private keys for siging server and client certificates)
