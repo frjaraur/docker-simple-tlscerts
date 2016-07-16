@@ -1,11 +1,11 @@
 #!/bin/sh
 ACTION=$1
 
-CASERVERNAME="${CASERVERNAME:=docker-tlscerts}"
+SERVERNAME="${SERVERNAME:=localhost}"
 
 SERVERIPS="${SERVERIPS}"
 
-CLIENTNAME="${CLIENTNAME:=docker-tlscerts}"
+CLIENTNAME="${CLIENTNAME:=localhost}"
 
 
 # COLORS
@@ -59,8 +59,8 @@ case ${ACTION} in
 		echo "Creating private server key"
 		openssl genrsa -out server-key.pem 2048
 		[ $? -ne 0 ] && PrintError "An error ocurred during server public key generation..."
-		echo "Creating a certificate sigining request for server ${CASERVERNAME} (default docker-tls)."
-		openssl req -subj "/CN=${CASERVERNAME}" -new -key server-key.pem -out server.csr
+		echo "Creating a certificate sigining request for server ${SERVERNAME} (default localhost)."
+		openssl req -subj "/CN=${SERVERNAME}" -new -key server-key.pem -out server.csr
 		[ $? -ne 0 ] && PrintError "An error ocurred during server signing request generation..."
 
 		echo "SERVER IPs: ${SERVERIPS}"
@@ -80,7 +80,7 @@ case ${ACTION} in
 		echo "Creating private client key"
 		openssl genrsa -out client-key.pem 2048
 		[ $? -ne 0 ] && PrintError "An error ocurred during public key generation..."
-		echo "Creating a certificate sigining request for client ${CLIENTNAME} (default docker-tls)."
+		echo "Creating a certificate sigining request for client ${CLIENTNAME} (default localhost)."
 		openssl req -subj "/CN=${CLIENTNAME}" -new -key client-key.pem -out client.csr
 		[ $? -ne 0 ] && PrintError "An error ocurred during server signing request generation..."
 		echo "SERVER IPs: ${SERVERIPS}"
@@ -107,13 +107,11 @@ case ${ACTION} in
 	;;
 
 	help)
-		echo
-		echo
+		printf "\n\n\n"
 		echo "Use following environment variables for passing data to key generation scripts:"
-		printf " + ${RED}CASERVERNAME${NC} -> Name of the CA server, defaults to docker-tls\n"
+		printf " + ${RED}SERVERNAME${NC} -> Name of the server, defaults to localhost\n"
 		printf " + ${RED}SERVERIPS${NC} -> IPs to add to server certificate (defaults to 127.0.0.1 to allow at least local connections)\n"
-		printf " + ${RED}CLIENTNAME${NC} -> Server name for the client certificate, defaults to docker-tls\n"
-		echo ""
+		printf " + ${RED}CLIENTNAME${NC} -> Server name for the client certificate, defaults to localhost\n\n"
 		echo " Actions available:"
 		printf " - ${CYAN}generate_CA${NC} -- Generate a Certificate Authority (Public and Private keys for siging server and client certificates)\n"
 		printf " - ${CYAN}generate_serverkeys${NC} -- Generate CA signed server certificates (public and private)\n"
@@ -124,8 +122,8 @@ case ${ACTION} in
 		printf "\n ${RED}/certs${NC} is created as VOLUME for easy access to keys created\n\n"
 		echo "** You can avoid data answer using your own openssl.cnf file (/etc/ssl/openssl.cnf)"
 		echo
-		printf "${GREEN}frjaraur - https://github.com/frjaraur - DOCKER-SIMPLE-TLSCERTS${NC}\n"
-		echo
+		printf "${GREEN}frjaraur - https://github.com/frjaraur - DOCKER-SIMPLE-TLSCERTS${NC}\n\n"
+
 		FixPermissions
 		exit 0
 	;;
