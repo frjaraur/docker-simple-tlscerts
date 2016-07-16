@@ -134,7 +134,9 @@ case ${ACTION} in
 		echo "Use following environment variables for passing data to key generation scripts:"
 		printf " + ${RED}SERVERNAME${NC} -> Name of the server, defaults to localhost\n"
 		printf " + ${RED}SERVERIPS${NC} -> IPs to add to server certificate (defaults to 127.0.0.1 to allow at least local connections)\n"
-		printf " + ${RED}CLIENTNAME${NC} -> Server name for the client certificate, defaults to localhost\n\n"
+		printf " + ${RED}CLIENTNAME${NC} -> Server name for the client certificate, defaults to localhost\n"
+		printf " + ${RED}PASSPHRASE${NC} -> Avoid asking for passphrase during certs generation\n\n"
+
 		echo " Actions available:"
 		printf " - ${CYAN}generate_CA${NC} -- Generate a Certificate Authority (Public and Private keys for siging server and client certificates)\n"
 		printf " - ${CYAN}generate_serverkeys${NC} -- Generate CA signed server certificates (public and private)\n"
