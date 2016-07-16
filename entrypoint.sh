@@ -43,7 +43,7 @@ case ${ACTION} in
 		echo "You will be asked for a passphrase for securing your CA key (can use PASSPHRASE environment variable)."
 		echo "Remember this password for next steps."
 		echo "Generating Certificate Authority Private key"
-		if [ -n "${PASSPHRASE}"]
+		if [ -n "${PASSPHRASE}" ]
 		then
 			openssl genrsa -aes256 -passout pass:${PASSPHRASE} -out ca-key.pem 2048
 		else
@@ -53,7 +53,7 @@ case ${ACTION} in
 		echo "Generating Certificate Authority Public key"
 		echo "You will be asked for CA key passphrase (can use PASSPHRASE environment variable)."
 		echo "You will be asked for information to complete public key data, can be left blank for testing purposes"
-		if [ -n "${PASSPHRASE}"]
+		if [ -n "${PASSPHRASE}" ]
 		then
 			openssl req -new -x509 -days 365 -key ca-key.pem -sha256 -subj "/CN=${CANAME}" -passin pass:${PASSPHRASE} -out ca.pem
 		else
@@ -70,7 +70,7 @@ case ${ACTION} in
 	generate_serverkeys)
 		echo "You will be asked for CA key passphrase (can use PASSPHRASE environment variable)."
 		echo "Creating private server key"
-		if [ -n "${PASSPHRASE}"]
+		if [ -n "${PASSPHRASE}" ]
 		then
 			openssl genrsa -passin pass:${PASSPHRASE} -passin pass:${PASSPHRASE} -out server-key.pem 2048
 		else
@@ -96,7 +96,7 @@ case ${ACTION} in
 	generate_clientkeys)
 		echo "You will be asked for CA key passphrase (can use PASSPHRASE environment variable)."
 		echo "Creating private client key"
-		if [ -n "${PASSPHRASE}"]
+		if [ -n "${PASSPHRASE}" ]
 		then
 			openssl genrsa -passin pass:${PASSPHRASE} -out client-key.pem 2048
 		else
