@@ -1,6 +1,4 @@
 #!/bin/sh
-
-<<<<<<< HEAD
 ACTION=$1
 
 CASERVERNAME="${CASERVERNAME:=docker-tlscerts}"
@@ -36,48 +34,6 @@ FixPermissions(){
 PrintError(){
 	printf "${RED}ERROR: $* ${NC}\n"
 	exit 1
-=======
-if [ -n "${DNSSERVERS}" ]
-then
-	UNBOUND_CFGFILE="/etc/unbound/unbound.conf"
-  echo "## Simple forward caching DNS
-	server:
-		interface: 0.0.0.0
-	  	access-control: 0.0.0.0/0 allow
-	    verbosity: 1
-	    include: /etc/unbound/localrecords.conf
-
-	forward-zone:
-		name: "."
-	">${UNBOUND_CFGFILE}
-
-	for DNSSERVER in ${DNSSERVERS}
-	do
-		echo -e "\tforward-addr: ${DNSSERVER}" >> ${UNBOUND_CFGFILE}
-	done
-
-fi
-
-
-[ ! -n "${DNSENTRIES}" ] && exec $@
-
-RECORDS_FILE=/etc/unbound/localrecords.conf
-
-#Alway recreate a new localrecords.conf file
->$RECORDS_FILE
-
-ReverseFQDN(){
-	reversefqdn=
-	echo $1
-	OLD_IFS="$IFS"
-	IFS="."
-	for piece in $1
-	do
-		reversefqdn="${piece}.${reversefqdn}"
-	done
-	IFS=$OLD_IFS
-	echo $reversefqdn
->>>>>>> f90c90ac26dd024066418f1121e4529e5a2f9e21
 }
 
 case ${ACTION} in
@@ -98,7 +54,7 @@ case ${ACTION} in
 		FixPermissions
 		exit 0
 	;;
-	generate_serverkey)
+	generate_serverkeys)
 		echo "You will be asked for CA key passphrase."
 		echo "Creating private server key"
 		openssl genrsa -out server-key.pem 2048
@@ -119,7 +75,7 @@ case ${ACTION} in
 
 	;;
 
-	generate_clientkey)
+	generate_clientkeys)
 		echo "You will be asked for CA key passphrase."
 		echo "Creating private client key"
 		openssl genrsa -out client-key.pem 2048
@@ -160,11 +116,12 @@ case ${ACTION} in
 		echo ""
 		echo " Actions available:"
 		printf " - ${CYAN}generate_CA${NC} -- Generate a Certificate Authority (Public and Private keys for siging server and client certificates)\n"
-		printf " - ${CYAN}generate_serverkey${NC} -- Generate CA signed server certificates (public and private)\n"
-		printf " - ${CYAN}generate_clientkey${NC} -- Generate CA signed client certificates (public and private)\n"
+		printf " - ${CYAN}generate_serverkeys${NC} -- Generate CA signed server certificates (public and private)\n"
+		printf " - ${CYAN}generate_clientkeys${NC} -- Generate CA signed client certificates (public and private)\n"
 		printf " - ${CYAN}list${NC} -- List files in /certs directory\n"
 		printf " - ${CYAN}clean${NC} -- Remove previously created certificates and configurations\n"
 		echo
+		printf "\n ${RED}/certs${NC} is created as VOLUME for easy access to keys created\n\n"
 		echo "** You can avoid data answer using your own openssl.cnf file (/etc/ssl/openssl.cnf)"
 		echo
 		printf "${GREEN}frjaraur - https://github.com/frjaraur - DOCKER-SIMPLE-TLSCERTS${NC}\n"

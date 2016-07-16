@@ -1,5 +1,6 @@
 FROM alpine
-RUN apk --update add openssl bash
+MAINTAINER frjaraur@gmail.com
+RUN apk --update add openssl
 WORKDIR /certs
 VOLUME /certs
 COPY entrypoint.sh /entrypoint.sh
