@@ -12,33 +12,7 @@ Use following environment variables for passing data to key generation scripts:
  - list -- List files in /certs directory
  - clean -- Remove previously created certificates and configurations
 
-<<<<<<< HEAD
 ** You can avoid data answer using your own openssl.cnf file (/etc/ssl/openssl.cnf)
-=======
-local-data: "ten.zero.zero.one. A 10.0.0.1"
-
-local-data-ptr: "10.0.0.1 ten.zero.zero.one."
-
-local-data: "ten.zero.zero.two. A 10.0.0.2"
-
-local-data-ptr: "10.0.0.2 ten.zero.zero.two."
-
-
-docker run -d -P  -e DNSENTRIES="ten.zero.zero.one@10.0.0.1 ten.zero.zero.two@10.0.0.2" frjaraur/docker-simple-unbound
-
-
-###########
-
-EXAMPLE:
-
-docker run -d -P -e DNSSERVERS="208.67.222.222 208.67.220.220" -e DNSENTRIES="ten.zero.zero.one@10.0.0.1 ten.zero.zero.two@10.0.0.2" frjaraur/docker-simple-unbound
-
-
-NOTE:
-Instead of DNSENTRIES variable, you can create your own "localrecords.conf" file and use it...
-
-docker run -d -p 53:53/udp -v $(pwd)/localrecords.conf:/etc/unbound/localrecords.conf frjaraur/docker-simple-unbound
->>>>>>> f90c90ac26dd024066418f1121e4529e5a2f9e21
 
 frjaraur - https://github.com/frjaraur - DOCKER-SIMPLE-TLSCERTS
 
