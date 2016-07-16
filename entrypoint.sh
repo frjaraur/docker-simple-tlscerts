@@ -7,6 +7,8 @@ SERVERIPS="${SERVERIPS}"
 
 CLIENTNAME="${CLIENTNAME:=localhost}"
 
+CANAME="${CANAME:=swarm}"
+
 
 # COLORS
 RED='\033[0;31m' # Red
@@ -41,11 +43,21 @@ case ${ACTION} in
 		echo "You will be asked for a passphrase for securing your CA key."
 		echo "Remember this password for next steps."
 		echo "Generating Certificate Authority Private key"
-		openssl genrsa -aes256 -out ca-key.pem 2048
+		if [ -n "${PASSPHRASE}"]
+		then
+			openssl genrsa -aes256 -passout pass:${PASSPHRASE} -out ca-key.pem 2048
+		else
+			openssl genrsa -aes256 -out ca-key.pem 2048
+		fi
 		[ $? -ne 0 ] && PrintError "An error ocurred during CA private key generation..."
 		echo "Generating Certificate Authority Public key"
 		echo "You will be asked for information to complete public key data, can be left blank for testing purposes"
-		openssl req -new -x509 -days 365 -key ca-key.pem -sha256 -out ca.pem
+		if [ -n "${PASSPHRASE}"]
+		then
+			openssl req -new -x509 -days 365 -key ca-key.pem -sha256 -subj "/CN=${CANAME}" -passin pass:${PASSPHRASE} -out ca.pem
+		else
+			openssl req -new -x509 -days 365 -key ca-key.pem -sha256 -out ca.pem
+		fi
 		[ $? -ne 0 ] && PrintError "An error ocurred during CA public key generation..."
 
 		echo "Certificate Authority created..."
