@@ -1,16 +1,5 @@
 # docker-simple-tlscerts
 
-<<<<<<< HEAD
-=======
-You can use DNSSERVERS variable for changing default google forwarders to your own servers
-
-docker run -d -P -e DNSSERVERS="208.67.222.222 208.67.220.220" frjaraur/docker-simple-unbound
-
-
-Localrecords Examples...
->>>>>>> f90c90ac26dd024066418f1121e4529e5a2f9e21
-
-
 Use following environment variables for passing data to key generation scripts:
  + CASERVERNAME -> Name of the CA server, defaults to docker-tls
  + SERVERIPS -> IPs to add to server certificate (defaults to 127.0.0.1 to allow at least local connections)
