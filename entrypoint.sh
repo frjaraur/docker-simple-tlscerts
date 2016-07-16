@@ -40,7 +40,7 @@ PrintError(){
 
 case ${ACTION} in
 	generate_CA)
-		echo "You will be asked for a passphrase for securing your CA key."
+		echo "You will be asked for a passphrase for securing your CA key (can use PASSPHRASE environment variable)."
 		echo "Remember this password for next steps."
 		echo "Generating Certificate Authority Private key"
 		if [ -n "${PASSPHRASE}"]
@@ -51,6 +51,7 @@ case ${ACTION} in
 		fi
 		[ $? -ne 0 ] && PrintError "An error ocurred during CA private key generation..."
 		echo "Generating Certificate Authority Public key"
+		echo "You will be asked for CA key passphrase (can use PASSPHRASE environment variable)."
 		echo "You will be asked for information to complete public key data, can be left blank for testing purposes"
 		if [ -n "${PASSPHRASE}"]
 		then
@@ -67,9 +68,14 @@ case ${ACTION} in
 		exit 0
 	;;
 	generate_serverkeys)
-		echo "You will be asked for CA key passphrase."
+		echo "You will be asked for CA key passphrase (can use PASSPHRASE environment variable)."
 		echo "Creating private server key"
-		openssl genrsa -out server-key.pem 2048
+		if [ -n "${PASSPHRASE}"]
+		then
+			openssl genrsa -passin pass:${PASSPHRASE} -passin pass:${PASSPHRASE} -out server-key.pem 2048
+		else
+			openssl genrsa -passin pass:${PASSPHRASE} -out server-key.pem 2048
+		fi
 		[ $? -ne 0 ] && PrintError "An error ocurred during server public key generation..."
 		echo "Creating a certificate sigining request for server ${SERVERNAME} (default localhost)."
 		openssl req -subj "/CN=${SERVERNAME}" -new -key server-key.pem -out server.csr
@@ -88,9 +94,14 @@ case ${ACTION} in
 	;;
 
 	generate_clientkeys)
-		echo "You will be asked for CA key passphrase."
+		echo "You will be asked for CA key passphrase (can use PASSPHRASE environment variable)."
 		echo "Creating private client key"
-		openssl genrsa -out client-key.pem 2048
+		if [ -n "${PASSPHRASE}"]
+		then
+			openssl genrsa -passin pass:${PASSPHRASE} -out client-key.pem 2048
+		else
+			openssl genrsa -out client-key.pem 2048
+		fi
 		[ $? -ne 0 ] && PrintError "An error ocurred during public key generation..."
 		echo "Creating a certificate sigining request for client ${CLIENTNAME} (default localhost)."
 		openssl req -subj "/CN=${CLIENTNAME}" -new -key client-key.pem -out client.csr
