@@ -1,6 +1,8 @@
 #!/bin/sh
 ACTION=$1
 
+OPTION=$2
+
 SERVERNAME="${SERVERNAME:=localhost}"
 
 SERVERIPS="${SERVERIPS}"
@@ -128,6 +130,29 @@ case ${ACTION} in
 		exit 0
 	;;
 
+	read_publickey)
+		[ -n "${PASSPHRASE}" ] && PASSPHRASE="-passin pass:${PASSPHRASE} "
+		FILE="$(echo ${OPTION}|cut -d "." -f1)"
+		if [ ! -f /certs/${FILE} ]
+		then
+			openssl x509  ${PASSPHRASE}-in /certs/${FILE}.pem -noout -text
+		else
+			PrintError "File ${RED}${FILE}.pem${NC} doesn't exists"
+		fi
+		exit 0
+	;;
+
+	read_privatekey)
+		[ -n "${PASSPHRASE}" ] && PASSPHRASE="-passin pass:${PASSPHRASE} "
+		FILE="$(echo ${OPTION}|cut -d "." -f1)"
+		if [ ! -f /certs/${FILE} ]
+		then
+			openssl rsa ${PASSPHRASE}-in /certs/${FILE}.pem -noout -text
+		else
+			PrintError "File ${RED}${FILE}.pem${NC} doesn't exists"
+		fi
+		exit 0
+	;;
 	help)
 		printf "\n\n\n"
 		echo "Use following environment variables for passing data to key generation scripts:"
@@ -142,10 +167,11 @@ case ${ACTION} in
 		printf " - ${CYAN}generate_clientkeys${NC} -- Generate CA signed client certificates (public and private)\n"
 		printf " - ${CYAN}list${NC} -- List files in /certs directory\n"
 		printf " - ${CYAN}clean${NC} -- Remove previously created certificates and configurations\n"
-		echo
+		printf " - ${CYAN}read_privatekey${NC} -- Read private key data\n"
+		printf " - ${CYAN}read_publickey${NC} -- Read public key data\n\n\n"
 		printf "\n ${RED}/certs${NC} is created as VOLUME for easy access to keys created\n\n"
-		echo "** You can avoid data answer using your own openssl.cnf file (/etc/ssl/openssl.cnf)"
-		echo
+		printf "** You can avoid data answer using your own openssl.cnf file (/etc/ssl/openssl.cnf) and using PASSPHRASE environment variable\n"
+		printf "** Remember to use -ti when running containers if you to be asked for data ;)\n"
 		printf "${GREEN}frjaraur - https://github.com/frjaraur - DOCKER-SIMPLE-TLSCERTS${NC}\n\n"
 
 		FixPermissions

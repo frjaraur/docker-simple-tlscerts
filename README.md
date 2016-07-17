@@ -12,6 +12,8 @@ Use following environment variables for passing data to key generation scripts:
  - generate_clientkeys -- Generate CA signed client certificates (public and private)
  - list -- List files in /certs directory
  - clean -- Remove previously created certificates and configurations
+ - read_privatekey -- Read private key data
+ - read_publickey -- Read public key data
 
 ** You can avoid data answer using your own openssl.cnf file (/etc/ssl/openssl.cnf)
 
