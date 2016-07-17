@@ -70,20 +70,19 @@ case ${ACTION} in
 	generate_serverkeys)
 		echo "You will be asked for CA key passphrase (can use PASSPHRASE environment variable)."
 		echo "Creating private server key"
-		if [ -n "${PASSPHRASE}" ]
-		then
-			openssl genrsa -passin pass:${PASSPHRASE} -passin pass:${PASSPHRASE} -out server-key.pem 2048
-		else
-			openssl genrsa -passin pass:${PASSPHRASE} -out server-key.pem 2048
-		fi
+		openssl genrsa -out server-key.pem 2048
 		[ $? -ne 0 ] && PrintError "An error ocurred during server public key generation..."
 		echo "Creating a certificate sigining request for server ${SERVERNAME} (default localhost)."
 		openssl req -subj "/CN=${SERVERNAME}" -new -key server-key.pem -out server.csr
 		[ $? -ne 0 ] && PrintError "An error ocurred during server signing request generation..."
-
 		echo "SERVER IPs: ${SERVERIPS}"
 		echo "subjectAltName = ${SERVERIPS}" > extfile.cnf
-		openssl x509 -req -days 3650 -in server.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out server-cert.pem -extfile extfile.cnf
+	 	if [ -n "${PASSPHRASE}" ]
+    then
+			openssl x509 -req -days 3650 -in server.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -passin pass:${PASSPHRASE} -out server-cert.pem -extfile extfile.cnf
+    else
+			openssl x509 -req -days 3650 -in server.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out server-cert.pem -extfile extfile.cnf
+    fi
 		[ $? -ne 0 ] && PrintError "An error ocurred during server key signing ..."
 		rm -f server.csr extfile.cnf ca.srl 2>/dev/null
 		echo "Server certificates created..."
@@ -96,19 +95,19 @@ case ${ACTION} in
 	generate_clientkeys)
 		echo "You will be asked for CA key passphrase (can use PASSPHRASE environment variable)."
 		echo "Creating private client key"
-		if [ -n "${PASSPHRASE}" ]
-		then
-			openssl genrsa -passin pass:${PASSPHRASE} -out client-key.pem 2048
-		else
-			openssl genrsa -out client-key.pem 2048
-		fi
+		openssl genrsa -out client-key.pem 2048
 		[ $? -ne 0 ] && PrintError "An error ocurred during public key generation..."
 		echo "Creating a certificate sigining request for client ${CLIENTNAME} (default localhost)."
 		openssl req -subj "/CN=${CLIENTNAME}" -new -key client-key.pem -out client.csr
 		[ $? -ne 0 ] && PrintError "An error ocurred during server signing request generation..."
 		echo "SERVER IPs: ${SERVERIPS}"
 		echo "extendedKeyUsage = clientAuth" > extfile.cnf
-		openssl x509 -req -days 3650 -in client.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out client-cert.pem -extfile extfile.cnf
+		if [ -n "${PASSPHRASE}" ]
+		then
+			openssl x509 -req -days 3650 -in client.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -passin pass:${PASSPHRASE} -out client-cert.pem -extfile extfile.cnf
+		else
+			openssl x509 -req -days 3650 -in client.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out client-cert.pem -extfile extfile.cnf
+		fi
 		[ $? -ne 0 ] && PrintError "An error ocurred during server key signing ..."
 		rm -f client.csr extfile.cnf ca.srl 2>/dev/null
 		echo "Client certificates created..."
