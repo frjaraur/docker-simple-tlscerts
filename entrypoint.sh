@@ -58,7 +58,6 @@ case ${ACTION} in
 		echo "Generating Certificate Authority Public key"
 		echo "You will be asked for CA key passphrase (can use PASSPHRASE environment variable)."
 		echo "You will be asked for information to complete public key data, can be left blank for testing purposes"
-		if [ -n "${PASSPHRASE}" ]
 		[ -n "${PASSPHRASE}" ]  && PASSPOPTS="-passin pass:${PASSPHRASE} "
 		openssl req -new -x509 -days ${DAYS} -key ca-key.pem -sha256 -subj "/CN=${CANAME}" ${PASSPOPTS} -out ca.pem
 		[ $? -ne 0 ] && PrintError "An error ocurred during CA public key generation..."
