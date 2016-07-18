@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+#VERSION
+VERSION=1.0
+
 ACTION=$1
 
 OPTION=$2
@@ -153,7 +157,7 @@ case ${ACTION} in
 		printf "\n ${RED}/certs${NC} is created as VOLUME for easy access to keys created\n\n"
 		printf "** You can avoid data answer using your own openssl.cnf file (/etc/ssl/openssl.cnf) and using PASSPHRASE environment variable\n"
 		printf "** Remember to use -ti when running containers if you to be asked for data ;)\n"
-		printf "${GREEN}frjaraur - https://github.com/frjaraur - DOCKER-SIMPLE-TLSCERTS${NC}\n\n"
+		printf "${GREEN}frjaraur - https://github.com/frjaraur - DOCKER-SIMPLE-TLSCERTS${RED}${VERSION}${NC}\n\n"
 
 		FixPermissions
 		exit 0
