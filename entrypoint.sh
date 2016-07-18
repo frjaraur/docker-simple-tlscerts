@@ -11,7 +11,7 @@ CLIENTNAME="${CLIENTNAME:=localhost}"
 
 CANAME="${CANAME:=swarm}"
 
-DAYS="${SERVERNAME:=365}"
+DAYS="${DAYS:=365}"
 
 
 # COLORS
@@ -47,22 +47,16 @@ case ${ACTION} in
 		echo "You will be asked for a passphrase for securing your CA key (can use PASSPHRASE environment variable)."
 		echo "Remember this password for next steps."
 		echo "Generating Certificate Authority Private key"
-		if [ -n "${PASSPHRASE}" ]
-		then
-			openssl genrsa -aes256 -passout pass:${PASSPHRASE} -out ca-key.pem 2048
-		else
-			openssl genrsa -aes256 -out ca-key.pem 2048
-		fi
+		PASSPOPTS=""
+		[ -n "${PASSPHRASE}" ]  && PASSPOPTS="-passout pass:${PASSPHRASE} "
+		openssl genrsa -aes256 ${PASSPOPTS} -out ca-key.pem 2048
 		[ $? -ne 0 ] && PrintError "An error ocurred during CA private key generation..."
 		echo "Generating Certificate Authority Public key"
 		echo "You will be asked for CA key passphrase (can use PASSPHRASE environment variable)."
 		echo "You will be asked for information to complete public key data, can be left blank for testing purposes"
 		if [ -n "${PASSPHRASE}" ]
-		then
-			openssl req -new -x509 -days ${DAYS} -key ca-key.pem -sha256 -subj "/CN=${CANAME}" -passin pass:${PASSPHRASE} -out ca.pem
-		else
-			openssl req -new -x509 -days ${DAYS} -key ca-key.pem -sha256 -out ca.pem
-		fi
+		[ -n "${PASSPHRASE}" ]  && PASSPOPTS="-passin pass:${PASSPHRASE} "
+		openssl req -new -x509 -days ${DAYS} -key ca-key.pem -sha256 -subj "/CN=${CANAME}" ${PASSPOPTS} -out ca.pem
 		[ $? -ne 0 ] && PrintError "An error ocurred during CA public key generation..."
 
 		echo "Certificate Authority created..."
@@ -81,12 +75,8 @@ case ${ACTION} in
 		[ $? -ne 0 ] && PrintError "An error ocurred during server signing request generation..."
 		echo "SERVER IPs: ${SERVERIPS}"
 		echo "subjectAltName = ${SERVERIPS}" > extfile.cnf
-	 	if [ -n "${PASSPHRASE}" ]
-    then
-			openssl x509 -req -days 3650 -in server.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -passin pass:${PASSPHRASE} -out server-cert.pem -extfile extfile.cnf
-    else
-			openssl x509 -req -days 3650 -in server.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out server-cert.pem -extfile extfile.cnf
-    fi
+	 	[ -n "${PASSPHRASE}" ] && PASSPHRASE="-passin pass:${PASSPHRASE} "
+		openssl x509 -req -days ${DAYS} -in server.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial ${PASSPHRASE}-out server-cert.pem -extfile extfile.cnf
 		[ $? -ne 0 ] && PrintError "An error ocurred during server key signing ..."
 		rm -f server.csr extfile.cnf ca.srl 2>/dev/null
 		echo "Server certificates created..."
@@ -106,12 +96,8 @@ case ${ACTION} in
 		[ $? -ne 0 ] && PrintError "An error ocurred during server signing request generation..."
 		echo "SERVER IPs: ${SERVERIPS}"
 		echo "extendedKeyUsage = clientAuth" > extfile.cnf
-		if [ -n "${PASSPHRASE}" ]
-		then
-			openssl x509 -req -days 3650 -in client.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -passin pass:${PASSPHRASE} -out client-cert.pem -extfile extfile.cnf
-		else
-			openssl x509 -req -days 3650 -in client.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out client-cert.pem -extfile extfile.cnf
-		fi
+		[ -n "${PASSPHRASE}" ] && PASSPHRASE="-passin pass:${PASSPHRASE} "
+		openssl x509 -req -days ${DAYS} -in client.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial ${PASSPHRASE}-out client-cert.pem -extfile extfile.cnf
 		[ $? -ne 0 ] && PrintError "An error ocurred during server key signing ..."
 		rm -f client.csr extfile.cnf ca.srl 2>/dev/null
 		echo "Client certificates created..."
@@ -135,24 +121,16 @@ case ${ACTION} in
 	read_publickey)
 		[ -n "${PASSPHRASE}" ] && PASSPHRASE="-passin pass:${PASSPHRASE} "
 		FILE="$(echo ${OPTION}|cut -d "." -f1)"
-		if [ ! -f /certs/${FILE} ]
-		then
-			openssl x509  ${PASSPHRASE}-in /certs/${FILE}.pem -noout -text
-		else
-			PrintError "File ${RED}${FILE}.pem${NC} doesn't exists"
-		fi
+		[ ! -f /certs/${FILE} ] && PrintError "File ${RED}${FILE}.pem${NC} doesn't exists" && exit 0
+		openssl x509  ${PASSPHRASE}-in /certs/${FILE}.pem -noout -text
 		exit 0
 	;;
 
 	read_privatekey)
 		[ -n "${PASSPHRASE}" ] && PASSPHRASE="-passin pass:${PASSPHRASE} "
 		FILE="$(echo ${OPTION}|cut -d "." -f1)"
-		if [ ! -f /certs/${FILE} ]
-		then
-			openssl rsa ${PASSPHRASE}-in /certs/${FILE}.pem -noout -text
-		else
-			PrintError "File ${RED}${FILE}.pem${NC} doesn't exists"
-		fi
+		[ ! -f /certs/${FILE} ] && PrintError "File ${RED}${FILE}.pem${NC} doesn't exists" && exit 0
+		openssl rsa ${PASSPHRASE}-in /certs/${FILE}.pem -noout -text
 		exit 0
 	;;
 	help)
