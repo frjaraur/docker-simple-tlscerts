@@ -123,16 +123,16 @@ case ${ACTION} in
 
 	read_publickey)
 		[ -n "${PASSPHRASE}" ] && PASSPHRASE="-passin pass:${PASSPHRASE} "
-		FILE="$(echo ${OPTION}|cut -d "." -f1)"
-		[ ! -f /certs/${FILE} ] && PrintError "File ${RED}${FILE}.pem${NC} doesn't exists" && exit 0
+		FILE=${OPTION}
+		[ ! -f /certs/${FILE} ] && PrintError "File ${RED}${FILE}${NC} doesn't exists" && exit 0
 		openssl x509  ${PASSPHRASE}-in /certs/${FILE}.pem -noout -text
 		exit 0
 	;;
 
 	read_privatekey)
 		[ -n "${PASSPHRASE}" ] && PASSPHRASE="-passin pass:${PASSPHRASE} "
-		FILE="$(echo ${OPTION}|cut -d "." -f1)"
-		[ ! -f /certs/${FILE} ] && PrintError "File ${RED}${FILE}.pem${NC} doesn't exists" && exit 0
+		FILE=${OPTION}
+		[ ! -f /certs/${FILE} ] && PrintError "File ${RED}${FILE}${NC} doesn't exists" && exit 0
 		openssl rsa ${PASSPHRASE}-in /certs/${FILE}.pem -noout -text
 		exit 0
 	;;
