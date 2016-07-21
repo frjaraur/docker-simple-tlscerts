@@ -125,7 +125,7 @@ case ${ACTION} in
 		[ -n "${PASSPHRASE}" ] && PASSPHRASE="-passin pass:${PASSPHRASE} "
 		FILE=${OPTION}
 		[ ! -f /certs/${FILE} ] && PrintError "File ${RED}${FILE}${NC} doesn't exists" && exit 0
-		openssl x509  ${PASSPHRASE}-in /certs/${FILE}.pem -noout -text
+		openssl x509  ${PASSPHRASE}-in /certs/${FILE} -noout -text
 		exit 0
 	;;
 
@@ -133,7 +133,7 @@ case ${ACTION} in
 		[ -n "${PASSPHRASE}" ] && PASSPHRASE="-passin pass:${PASSPHRASE} "
 		FILE=${OPTION}
 		[ ! -f /certs/${FILE} ] && PrintError "File ${RED}${FILE}${NC} doesn't exists" && exit 0
-		openssl rsa ${PASSPHRASE}-in /certs/${FILE}.pem -noout -text
+		openssl rsa ${PASSPHRASE}-in /certs/${FILE} -noout -text
 		exit 0
 	;;
 	help)
